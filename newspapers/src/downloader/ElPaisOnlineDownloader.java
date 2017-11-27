@@ -56,10 +56,7 @@ public class ElPaisOnlineDownloader {
 
 		}
 
-		
-		
 		// 1. Configure Webriver
-
 		WebDriver driver = setUpJBrowser();
 
 		System.out.println("1. Start Login");
@@ -111,8 +108,6 @@ public class ElPaisOnlineDownloader {
 			driver.get(baseUrl);	
 						
 		}
-		
-		
 		
 		//Write urls to file
 		BufferedWriter outputWriter;
