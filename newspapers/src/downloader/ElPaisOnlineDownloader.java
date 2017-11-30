@@ -17,23 +17,23 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
+import com.machinepublishers.jbrowserdriver.Settings;
 
 public class ElPaisOnlineDownloader {
 
-
-	//private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\dgonzalezgon\\Desktop\\Workspace Beto\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	// private static final String geckoPath =
+	// "C:\\Users\\dgonzalezgon\\Desktop\\Workspace Beto\\geckodriver.exe";
 	private static final String baseUrl = "http://elpaisonline.com/index.php/edicion-virtual";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
 
 	private static ArrayList<String> urls = null;
-	
-	
+
 	public static void main(String[] args) {
 
-		// 0. Get args
+		// 0. Get args downloadpath
 		if (args.length > 0) {
 
 			downloadPath = args[0];
@@ -72,56 +72,71 @@ public class ElPaisOnlineDownloader {
 		List<WebElement> itemList = itemContainer.findElements(By.className("itemContainer"));
 
 		System.out.println("Childs: " + itemList.size());
-		
+
 		urls = new ArrayList<>();
 
 		int counter = itemList.size();
-		
-		for(int i = 0; i < counter; i++) {
-						
-			//Reload newspaper list container (losted reference)
+
+		for (int i = 0; i < counter; i++) {
+
+			// Reload newspaper list container (losted reference)
 			itemContainer = driver.findElement(By.id("itemListPrimary"));
 			itemList = itemContainer.findElements(By.className("itemContainer"));
-			
+
 			WebElement newspaper = itemList.get(i);
-			
-			//Open paper
+
+			String newspaperName = "Impresion" + i;
+
+			try {
+				// Get newspaper name
+				newspaperName = newspaper.findElement(By.className("catItemTitle")).findElement(By.tagName("a"))
+						.getText();
+
+				newspaperName = newspaperName.substring(0, newspaperName.indexOf(" "));
+
+				System.out.println(newspaperName);
+
+			} catch (Exception e) {
+				System.err.println("Couldn't get newspaper name");
+			}
+
+			// Open paper
 			newspaper.findElement(By.className("img-responsive")).click();
-			
-			//Find container div
+
+			// Find container div
 			wait = new WebDriverWait(driver, 30);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("itemFullText")));
-			
-			//Switch to iframe
+
+			// Switch to iframe
 			WebElement container = driver.findElement(By.className("itemFullText"));
 			WebElement iframe = container.findElement(By.xpath("//iframe"));
 			driver.switchTo().frame(iframe);
-			
-			//Find link
+
+			// Find link
 			WebElement link = driver.findElement(By.xpath("//a[contains(@href,'pagina')]"));
 
 			String href = link.getAttribute("href");
-			
-			urls.add(href.substring(0, href.lastIndexOf("/")));
-			
-			//Go back
-			driver.get(baseUrl);	
-						
+
+			urls.add(newspaperName + "|" + href.substring(0, href.lastIndexOf("/")));
+
+			// Go back
+			driver.get(baseUrl);
+
 		}
-		
-		//Write urls to file
+
+		// Write urls to file
 		BufferedWriter outputWriter;
 		Iterator urlsIterator = urls.iterator();
-				
+
 		try {
 			outputWriter = new BufferedWriter(new FileWriter(urlsFilePath));
 
 			while (urlsIterator.hasNext()) {
 
-				String u =(String) urlsIterator.next();
-				
+				String u = (String) urlsIterator.next();
+
 				System.out.println(u);
-				
+
 				outputWriter.write(u);
 				outputWriter.newLine();
 			}
@@ -133,10 +148,9 @@ public class ElPaisOnlineDownloader {
 
 			e1.printStackTrace();
 		}
-		
 
 		clearAndExit(driver);
-		
+
 		System.out.println("DONE");
 
 	}
@@ -156,23 +170,25 @@ public class ElPaisOnlineDownloader {
 		WebDriver driver = new FirefoxDriver(dc);
 
 		driver.manage().deleteAllCookies();
-		
+
 		// Set check loop in WebDriverWaits
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
 		return driver;
 
 	}
-	
+
 	private static WebDriver setUpJBrowser() {
 
 		// 0. Creacion de directorio y configuracion del webdriver
 		System.out.println("0. Creating directory and configuration");
 
-		WebDriver driver = new JBrowserDriver();
+		Settings settings = new Settings.Builder().javascript(false).build();
+
+		WebDriver driver = new JBrowserDriver(settings);
 
 		driver.manage().deleteAllCookies();
-		
+
 		// Set check loop in WebDriverWaits
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
@@ -185,7 +201,6 @@ public class ElPaisOnlineDownloader {
 
 		driver.manage().deleteAllCookies();
 		driver.quit();
-		
 
 	}
 
