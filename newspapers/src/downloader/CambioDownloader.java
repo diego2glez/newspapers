@@ -80,7 +80,7 @@ public class CambioDownloader {
 
 		driver.get(baseUrl);
 
-		// Wait for LogIn button
+		// Wait for LogIn butto n
 		WebDriverWait wait = new WebDriverWait(driver, 30);
 		
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@data-track=\"signin\"]")));
