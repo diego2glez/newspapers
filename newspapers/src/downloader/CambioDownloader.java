@@ -1,10 +1,14 @@
 package downloader;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -20,22 +24,23 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 import com.machinepublishers.jbrowserdriver.Settings;
 
-import util.JBrowserDriverUtil;
-
 public class CambioDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\dgonzalezgon\\Desktop\\Workspace Beto\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\dgonzalezgon\\Desktop\\Workspace Beto\\geckodriver.exe";
 	private static final String baseUrl = "https://issuu.com";
 	private static final String cambioUrl = "https://issuu.com/cambio2020/";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
 
-	private static DateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
-	private static String currentDate;
+	private static DateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yy");
+	private static DateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+	private static String currentDate1;
+	private static String currentDate2;
 
-	private static Map<String, String> urls = null;
+	private static Map<String, String> nameUrlPaper = null;
+	private static ArrayList<String> urls = null;
 
 	public static void main(String[] args) {
 
@@ -51,19 +56,14 @@ public class CambioDownloader {
 				return;
 
 			}
-			
-			if(downloadPath.substring(downloadPath.length() - 1) != "\\") {
-				
-				downloadPath = downloadPath + "\\";
-				
-			}
 
 			urlsFilePath = downloadPath + "URLs.txt";
 
 			// Current Date
 			Date date = new Date();
-			currentDate = dateFormat.format(date);
-			System.out.println("Current Date: " + currentDate);
+			currentDate1 = dateFormat1.format(date);
+			currentDate2 = dateFormat2.format(date);
+			System.out.println("Current Date: " + currentDate1 + ", " + currentDate2);
 
 		} else {
 
@@ -77,38 +77,19 @@ public class CambioDownloader {
 		WebDriver driver = setUpFirefox();
 
 		System.out.println("1. Start Login");
-
-		driver.get(baseUrl);
-
-		// Wait for LogIn butto n
-		WebDriverWait wait = new WebDriverWait(driver, 30);
-		
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@data-track=\"signin\"]")));
-
-		driver.findElement(By.xpath("//a[@data-track=\"signin\"]")).click();
-
-		// Wait for username TextBox
-		wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-username")));
-
-		driver.findElement(By.id("login-username")).sendKeys("jourrapide8");
-		driver.findElement(By.id("login-password")).sendKeys("12345678");
-
-		driver.findElement(By.id("login-button")).click();
-
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@data-track=\"upload\"]")));
 		
 		// 2. Go to Cambio page
 		driver.get(cambioUrl);
 
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("cover")));
+		WebDriverWait wait = new WebDriverWait(driver, 30);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("trms-StreamElement-title")));
 
 		// Get newspaper list
-		List<WebElement> itemList = driver.findElements(By.className("cover"));
+		List<WebElement> itemList = driver.findElements(By.className("trms-StreamElement-title"));
 
 		System.out.println("Childs: " + itemList.size());
 
-		urls = new HashMap<String, String>();
+		nameUrlPaper = new HashMap<String, String>();
 
 		int counter = itemList.size();
 
@@ -116,23 +97,77 @@ public class CambioDownloader {
 
 			WebElement newspaper = itemList.get(i);
 
-			if (newspaper.getAttribute("href").contains(currentDate)) {
+			System.out.println("#" + i + "  " + newspaper.getAttribute("href"));
+			
+			if (newspaper.getAttribute("href").contains(currentDate1)
+					|| newspaper.getAttribute("href").contains(currentDate2)) {
 
 				String href = newspaper.getAttribute("href");
 
 				System.out.println("Match! - " + href);
 
-				String newspaperName = href.substring(href.lastIndexOf("/"), href.length());
+				String newspaperName = href.substring(href.lastIndexOf("/")+1, href.length());
 				String newspaperUrl = newspaper.getAttribute("href");
-				
-				urls.put(newspaperName, newspaperUrl);
+
+				nameUrlPaper.put(newspaperName, newspaperUrl);
 
 			}
 
 		}
 		
-		//
+		// Loop over papers
+		Iterator it = nameUrlPaper.entrySet().iterator();
+		urls = new ArrayList<String>();
+		
+		while(it.hasNext()) {
+			
+			Map.Entry pair = (Map.Entry)it.next();
+			
+			System.out.println("Entering " + pair.getKey());
+			
+			//Go to paper
+			driver.get((String) pair.getValue());
+			
+			//
+			WebElement og = driver.findElement(By.xpath("//meta[@property=\"og:image\"]"));
+			
+			String downloadUrl = og.getAttribute("content");
+			
+			downloadUrl = downloadUrl.substring(0, downloadUrl.lastIndexOf("/")) + "/";
+			
+			System.out.println("Download url: " + downloadUrl);
+			
+			String line = pair.getKey() + "|" + downloadUrl;
+			
+			urls.add(line);
 
+		}
+
+		// Write urls to file
+		BufferedWriter outputWriter;
+		Iterator urlsIterator = urls.iterator();
+
+		try {
+			outputWriter = new BufferedWriter(new FileWriter(urlsFilePath));
+
+			while (urlsIterator.hasNext()) {
+
+				String u = (String) urlsIterator.next();
+
+				System.out.println(u);
+
+				outputWriter.write(u);
+				outputWriter.newLine();
+			}
+
+			outputWriter.flush();
+			outputWriter.close();
+
+		} catch (IOException e1) {
+
+			e1.printStackTrace();
+		}
+		
 		clearAndExit(driver);
 
 		System.out.println("DONE");
