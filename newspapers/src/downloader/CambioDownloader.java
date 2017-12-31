@@ -40,7 +40,7 @@ public class CambioDownloader {
 	private static String currentDate2;
 
 	private static Map<String, String> nameUrlPaper = null;
-	private static ArrayList<String> urls = null;
+	private static ArrayList<String> urls = null; 
 
 	public static void main(String[] args) {
 
