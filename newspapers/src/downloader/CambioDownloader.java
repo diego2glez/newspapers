@@ -26,21 +26,23 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class CambioDownloader {
 
-	private static final String geckoPath = "/usr/bin/geckodriver";
-	//private static final String geckoPath = "C:\\Users\\dgonzalezgon\\Desktop\\Workspace Beto\\geckodriver.exe";
+	// private static final String geckoPath = "/usr/bin/geckodriver";
+	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String baseUrl = "https://issuu.com";
 	private static final String cambioUrl = "https://issuu.com/cambio2020/";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
 
-	private static DateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yy");
-	private static DateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+	private static DateFormat dateFormat1 = new SimpleDateFormat("d-M-yy");
+	private static DateFormat dateFormat2 = new SimpleDateFormat("d-MM-yy");
+	private static DateFormat dateFormat3 = new SimpleDateFormat("dd-MM-yy");
 	private static String currentDate1;
 	private static String currentDate2;
+	private static String currentDate3;
 
 	private static Map<String, String> nameUrlPaper = null;
-	private static ArrayList<String> urls = null; 
+	private static ArrayList<String> urls = null;
 
 	public static void main(String[] args) {
 
@@ -63,7 +65,8 @@ public class CambioDownloader {
 			Date date = new Date();
 			currentDate1 = dateFormat1.format(date);
 			currentDate2 = dateFormat2.format(date);
-			System.out.println("Current Date: " + currentDate1 + ", " + currentDate2);
+			currentDate3 = dateFormat3.format(date);
+			System.out.println("Current Date: " + currentDate1 + ", " + currentDate2 + ", " + currentDate3);
 
 		} else {
 
@@ -77,7 +80,7 @@ public class CambioDownloader {
 		WebDriver driver = setUpFirefox();
 
 		System.out.println("1. Start Login");
-		
+
 		// 2. Go to Cambio page
 		driver.get(cambioUrl);
 
@@ -97,16 +100,17 @@ public class CambioDownloader {
 
 			WebElement newspaper = itemList.get(i);
 
-			System.out.println("#" + i + "  " + newspaper.getAttribute("href"));
-			
-			if (newspaper.getAttribute("href").contains(currentDate1)
-					|| newspaper.getAttribute("href").contains(currentDate2)) {
+			String title = newspaper.getText();
+
+			System.out.println("#" + i + "  " + title);
+
+			if (title.contains(currentDate1) || title.contains(currentDate2) || title.contains(currentDate3)) {
 
 				String href = newspaper.getAttribute("href");
 
 				System.out.println("Match! - " + href);
 
-				String newspaperName = href.substring(href.lastIndexOf("/")+1, href.length());
+				String newspaperName = href.substring(href.lastIndexOf("/") + 1, href.length());
 				String newspaperUrl = newspaper.getAttribute("href");
 
 				nameUrlPaper.put(newspaperName, newspaperUrl);
@@ -114,31 +118,31 @@ public class CambioDownloader {
 			}
 
 		}
-		
+
 		// Loop over papers
 		Iterator it = nameUrlPaper.entrySet().iterator();
 		urls = new ArrayList<String>();
-		
-		while(it.hasNext()) {
-			
-			Map.Entry pair = (Map.Entry)it.next();
-			
+
+		while (it.hasNext()) {
+
+			Map.Entry pair = (Map.Entry) it.next();
+
 			System.out.println("Entering " + pair.getKey());
-			
-			//Go to paper
+
+			// Go to paper
 			driver.get((String) pair.getValue());
-			
+
 			//
 			WebElement og = driver.findElement(By.xpath("//meta[@property=\"og:image\"]"));
-			
+
 			String downloadUrl = og.getAttribute("content");
-			
+
 			downloadUrl = downloadUrl.substring(0, downloadUrl.lastIndexOf("/")) + "/";
-			
+
 			System.out.println("Download url: " + downloadUrl);
-			
+
 			String line = pair.getKey() + "|" + downloadUrl;
-			
+
 			urls.add(line);
 
 		}
@@ -167,7 +171,7 @@ public class CambioDownloader {
 
 			e1.printStackTrace();
 		}
-		
+
 		clearAndExit(driver);
 
 		System.out.println("DONE");
@@ -203,13 +207,13 @@ public class CambioDownloader {
 		System.out.println("0. Creating directory and configuration");
 
 		Settings settings = Settings.builder().javascript(true).build();
-		
+
 		WebDriver driver = new JBrowserDriver(settings);
 
 		driver.manage().deleteAllCookies();
 
 		// Set check loop in WebDriverWaits
-		//driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		// driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
 		return driver;
 
