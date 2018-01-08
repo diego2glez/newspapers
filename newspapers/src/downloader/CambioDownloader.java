@@ -26,8 +26,8 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class CambioDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String baseUrl = "https://issuu.com";
 	private static final String cambioUrl = "https://issuu.com/cambio2020/";
 

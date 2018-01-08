@@ -21,7 +21,7 @@ urlsFilePath="${directoryPath}URLs.txt"
 	fi	
 
 	#Run Selenium jar
-	java -jar /home/vnc/Escritorio/Periodicos/Scripts/LaPalabraDownloader.jar ${directoryPath} 
+	xvfb-run -a java -jar /home/vnc/Escritorio/Periodicos/Scripts/LaPalabraDownloader.jar ${directoryPath} >& /tmp/salidaLaPalabraXVFB.log
 	
 	#Iterate over URLs file and download them
 	count=0
@@ -74,5 +74,4 @@ urlsFilePath="${directoryPath}URLs.txt"
 			
 	#Delete temp files
 	rm -rf $urlsFilePath $var
-	
 	
