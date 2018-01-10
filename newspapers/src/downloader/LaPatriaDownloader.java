@@ -24,9 +24,9 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class LaPatriaDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
-	private static final String laEstrellaUrl = "http://lapatriaenlinea.com/";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String laPatriaUrl = "http://lapatriaenlinea.com/";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
@@ -74,8 +74,8 @@ public class LaPatriaDownloader {
 
 		System.out.println("1. Start Login");
 
-		// 2. Go to Cambio page
-		driver.get(laEstrellaUrl);
+		// 2. Go to LaPatria page
+		driver.get(laPatriaUrl);
 
 		WebDriverWait wait = new WebDriverWait(driver, 30);
 
