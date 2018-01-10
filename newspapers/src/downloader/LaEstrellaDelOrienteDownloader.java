@@ -78,12 +78,9 @@ public class LaEstrellaDelOrienteDownloader {
 		System.out.println("1. Start Login");
 
 		// 2. Go to Cambio page
-		driver.get(laEstrellaUrl);
+		driver.get("http://www.laestrelladeloriente.com/index.php?option=com_k2&view=itemlist&layout=category&task=category&id=16&Itemid=796");
 
 		WebDriverWait wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Edición Impresa")));
-
-		driver.findElement(By.linkText("Edición Impresa")).click();
 		
 		//3. Get Edicion Id
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("itemListLeading")));
