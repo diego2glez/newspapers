@@ -23,8 +23,8 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class FrankfurterDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String FrankfurterUrl = "https://epaper.faz.net/";
 
 	private static String downloadPath = null;
@@ -138,7 +138,7 @@ public class FrankfurterDownloader {
 			e1.printStackTrace();
 		}
 
-		// clearAndExit(driver);
+		clearAndExit(driver);
 
 		System.out.println("DONE");
 
