@@ -1,8 +1,8 @@
 #!/bin/bash
 fecha=$(date +"%Y%m%d")
-directoryPath="/home/vnc/Escritorio/Periodicos/GER-Frankfurter/"
-#directoryPath="/tmp/GER-Frankfurter/"
-pdfName="Frankfurter_${fecha}"
+directoryPath="/home/vnc/Escritorio/Periodicos/GER-FrankfurterAllgemeine/"
+#directoryPath="/tmp/GER-FrankfurterAllgemeine/"
+pdfName="FrankfurterAllgemeine_${fecha}"
 pdfPath="${directoryPath}${pdfName}.pdf"
 urlsFilePath="${directoryPath}URLs.txt"
 
