@@ -21,16 +21,16 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
 public class RepubblicaDownloader {
 
-	//private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	// private static final String geckoPath = "C:\\Users\\Diego
+	// Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String loginUrl = "https://login.kataweb.it/registrazione/repubblica.it/login.jsp?ssoOnly=false&backurl=https%3A%2F%2Fwww.repubblica.it%2Fsocial%2Fsites%2Frepubblica%2Fnazionale%2Floader.php%3FmClose%3D2%26backUrl%3Dhttps%253A%2F%2Fquotidiano.repubblica.it%2Fedicola%2Fmanager%253Fservice%253Dlogin.social&origin=null&optbackurl=https%3A%2F%2Fwww.repubblica.it%2Fsocial%2Fsites%2Frepubblica%2Fnazionale%2Floader.php%3FmClose%3D2%26backUrl%3Dhttps%253A%2F%2Fquotidiano.repubblica.it%2Fedicola%2Fmanager%253Fservice%253Dlogin.social";
 
 	private static String downloadPath = null;
-	private static String urlsFilePath = null;
 
 	private static String orgCookiesPath = null;
 	private static String destCookiesPath = null;
-	
+
 	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 	private static String currentDate;
 
@@ -49,13 +49,11 @@ public class RepubblicaDownloader {
 
 			}
 
-			urlsFilePath = downloadPath + "URLs.txt";
-
-			//Current date
+			// Current date
 			Date date = new Date();
 			currentDate = dateFormat.format(date);
 			System.out.println("Current date: " + currentDate);
-			
+
 		} else {
 
 			System.err.println("Need params: java -jar xxxx DOWNLOADPATH");
@@ -66,7 +64,7 @@ public class RepubblicaDownloader {
 
 		// 1. Configure Webriver
 
-		WebDriver driver = setUpJBrowser();
+		WebDriver driver = setUpFirefox();
 
 		File dir = new File(downloadPath);
 		if (!dir.exists()) {
@@ -95,48 +93,50 @@ public class RepubblicaDownloader {
 		driver.findElement(By.name("userpw")).clear();
 		driver.findElement(By.name("userpw")).sendKeys("art59ba3");
 		driver.findElement(By.name("submit")).click();
-		
-		
+
 		// 2. Check if todays paper exists
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("select-1")));
 
 		WebElement version = driver.findElement(By.className("select-1"));
-		
-		System.out.println(version.getAttribute("data-image").contains(currentDate));
-		
-		// 3. Get download link
-		System.out.println("URL Descarga: " + "https://quotidiano.repubblica.it/edicola/manager?service=download.pdf&data="+currentDate+"&issue="+currentDate+"&testata=repubblica&sezione=nz_all");
 
+		if (version.getAttribute("data-image").contains(currentDate)) {
 
-		// 2. Get Firefox profile path
-		Process proc;
-		try {
+			// 3. Get download link
+			System.out.println(
+					"URL Descarga: " + "https://quotidiano.repubblica.it/edicola/manager?service=download.pdf&data="
+							+ currentDate + "&issue=" + currentDate + "&testata=repubblica&sezione=nz_all");
 
-			ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c",
-					"find /tmp/ -maxdepth 1 -name \"rust_mozprofile.*\" -printf \"%T+\\t%p\\n\" | sort | tail -1 | awk '{print $2}'");
+			// 2. Get Firefox profile path
+			Process proc;
+			try {
 
-			proc = pb.start();
+				ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c",
+						"find /tmp/ -maxdepth 1 -name \"rust_mozprofile.*\" -printf \"%T+\\t%p\\n\" | sort | tail -1 | awk '{print $2}'");
 
-			proc.waitFor();
-			StringBuffer output = new StringBuffer();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+				proc = pb.start();
 
-			orgCookiesPath = reader.readLine() + "/cookies.sqlite";
+				proc.waitFor();
+				StringBuffer output = new StringBuffer();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
-			destCookiesPath = downloadPath + "cookies.sqlite";
+				orgCookiesPath = reader.readLine() + "/cookies.sqlite";
 
-			dumpFirefoxSqliteCookiesFile();
+				destCookiesPath = downloadPath + "cookies.sqlite";
 
-		} catch (IOException | InterruptedException e1) {
+				dumpFirefoxSqliteCookiesFile();
 
-			e1.printStackTrace();
-		}
+			} catch (IOException | InterruptedException e1) {
 
-		try {
-			Thread.sleep(10000);
+				e1.printStackTrace();
+			}
 
-		} catch (Exception e) {
-			// TODO: handle exception
+			try {
+				Thread.sleep(10000);
+
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+
 		}
 
 		clearAndExit(driver);
