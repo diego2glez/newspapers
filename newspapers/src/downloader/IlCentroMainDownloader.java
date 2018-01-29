@@ -6,7 +6,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +39,12 @@ public class IlCentroMainDownloader {
 	private static String orgCookiesPath = null;
 	private static String destCookiesPath = null;
 	
+	private static DateFormat dateFormat1 = new SimpleDateFormat("yyyyMMdd");
+	private static DateFormat dateFormat2 = new SimpleDateFormat("yyyy");
+
+	private static String currentDate1;
+	private static String currentYear;
+	
 	public static void main(String[] args) {
 
 		// 0. Get args
@@ -52,6 +61,11 @@ public class IlCentroMainDownloader {
 			}
 
 			urlsFilePath = downloadPath + "URLs.txt";
+			
+			// Current Date
+			Date date = new Date();
+			currentDate1 = dateFormat1.format(date);
+			currentYear = dateFormat2.format(date);
 
 		} else {
 
@@ -97,7 +111,17 @@ public class IlCentroMainDownloader {
 		driver.findElement(By.id("input_password")).sendKeys("art59ba3");
 		driver.findElement(By.xpath("//p[contains(@rel,\"login_form\")]")).click();
 		
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[contains(@name,\"myprofile\")]")));
+		//wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[contains(@name,\"myprofile\")]")));
+		
+		try {
+			Thread.sleep(10000);			
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		driver.get("http://digital.ilcentro.it/ilcentro/books/pescara/"+currentYear+"/"+currentDate1+"pescara/index.html");
+		
+		driver.findElement(By.xpath("//p[contains(@id,\"activate\")]//a")).click();
 		
 		//2. Get Firefox profile path
 		Process proc;
