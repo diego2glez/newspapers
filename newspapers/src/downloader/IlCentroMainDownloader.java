@@ -29,8 +29,8 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 public class IlCentroMainDownloader {
 
 
-	//private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\dgonzalezgon\\Desktop\\Workspace Beto\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\dgonzalezgon\\Desktop\\Workspace Beto\\geckodriver.exe";
 	private static final String baseUrl = "http://digital.ilcentro.it/ilcentro/index.jsp";
 
 	private static String downloadPath = null;
