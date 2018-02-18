@@ -29,7 +29,8 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 public class CMJournalDownloader {
 
 	private static final String geckoPath = "/usr/bin/geckodriver";
-	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	// private static final String geckoPath = "C:\\Users\\Diego
+	// Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String baseUrl = "http://cofina.pressreader.com/";
 
 	private static String downloadPath = null;
@@ -145,6 +146,11 @@ public class CMJournalDownloader {
 
 		boolean success = true;
 
+		try {
+			Thread.sleep(10000);
+		} catch (Exception e) {
+		}
+
 		urls = new ArrayList<String>();
 
 		int page = 1;
@@ -174,7 +180,7 @@ public class CMJournalDownloader {
 
 				Map address = ((Map) jo.get("Data"));
 
-				success = jo.get("Status").equals("success");
+				success = jo.get("Status").equals("success") && (address != null);
 
 				System.out.println("Status = " + success);
 
@@ -190,32 +196,36 @@ public class CMJournalDownloader {
 
 		}
 
-		// Write urls to file
-		BufferedWriter outputWriter;
-		Iterator urlsIterator = urls.iterator();
+		if (urls.size() > 4) {
 
-		try {
-			outputWriter = new BufferedWriter(new FileWriter(urlsFilePath));
+			// Write urls to file
+			BufferedWriter outputWriter;
+			Iterator urlsIterator = urls.iterator();
 
-			while (urlsIterator.hasNext()) {
+			try {
+				outputWriter = new BufferedWriter(new FileWriter(urlsFilePath));
 
-				String u = (String) urlsIterator.next();
+				while (urlsIterator.hasNext()) {
 
-				System.out.println(u);
+					String u = (String) urlsIterator.next();
 
-				outputWriter.write(u);
-				outputWriter.newLine();
+					System.out.println(u);
+
+					outputWriter.write(u);
+					outputWriter.newLine();
+				}
+
+				outputWriter.flush();
+				outputWriter.close();
+
+			} catch (IOException e1) {
+
+				e1.printStackTrace();
 			}
 
-			outputWriter.flush();
-			outputWriter.close();
-
-		} catch (IOException e1) {
-
-			e1.printStackTrace();
 		}
 
-		clearAndExit(driver);
+		// clearAndExit(driver);
 
 		System.out.println("DONE");
 
@@ -268,7 +278,7 @@ public class CMJournalDownloader {
 		driver.manage().deleteAllCookies();
 
 		// Set check loop in WebDriverWaits
-		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
 		return driver;
 
