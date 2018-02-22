@@ -109,6 +109,13 @@ public class CMJournalDownloader {
 		// driver.get(baseUrl + "/correio-da-manh%C3%A3");
 		driver.findElement(By.xpath("//a[contains(@href,'2070')]")).click();
 
+		// Check date
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("toolbar-title")));
+
+		WebElement toolbarTitleEm = driver.findElement(By.xpath("//span[contains(@class,'toolbar-title')]//em"));
+
+		System.out.println("Fecha: " + toolbarTitleEm.getText());
+
 		// Get accessToken from html
 		String html = driver.getPageSource();
 
@@ -143,6 +150,8 @@ public class CMJournalDownloader {
 		}
 
 		System.out.println("IssueToken = " + issueToken);
+
+		// Check date:
 
 		boolean success = true;
 
