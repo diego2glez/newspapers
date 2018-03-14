@@ -79,19 +79,6 @@ public class IlCentroMainDownloader {
 
 		WebDriver driver = setUpFirefox();
 
-		File dir = new File(downloadPath);
-		if (!dir.exists()) {
-
-			dir.mkdir();
-
-		}
-
-		if (!dir.exists()) {
-
-			System.err.println("No existe el directorio " + downloadPath);
-
-		}
-
 		System.out.println("1. Start Login");
 
 		// 1. Login
