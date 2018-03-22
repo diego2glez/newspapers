@@ -37,6 +37,26 @@ public class ExpressoEMagazineDownloader {
 	
 	public static void main(String[] args) {
 
+		int count = 0;
+
+		while (count < 5) {
+			count++;
+
+			try {
+
+				run(args);
+				break;
+
+			} catch (Exception e) {
+				continue;
+			}
+
+		}
+
+	}
+
+	public static void run(String[] args) throws Exception {
+
 		// 0. Get args
 		if (args.length > 0) {
 
@@ -156,6 +176,13 @@ public class ExpressoEMagazineDownloader {
 			System.out.println(urlDownload);
 
 			images.add(urlDownload);
+
+		}
+		
+		System.out.println("PageCount = " + pageCount);
+
+		if (images.size() != childs.size()) {
+			throw new Exception();
 
 		}
 		
