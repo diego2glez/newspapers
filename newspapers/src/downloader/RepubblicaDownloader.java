@@ -1,9 +1,6 @@
 package downloader;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,6 +10,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -32,7 +30,9 @@ public class RepubblicaDownloader {
 	private static String destCookiesPath = null;
 
 	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+	private static DateFormat dateFormat2 = new SimpleDateFormat("ddMMyyyy");
 	private static String currentDate;
+	private static String currentDate2;
 
 	public static void main(String[] args) {
 
@@ -52,6 +52,7 @@ public class RepubblicaDownloader {
 			// Current date
 			Date date = new Date();
 			currentDate = dateFormat.format(date);
+			currentDate2 = dateFormat2.format(date);
 			System.out.println("Current date: " + currentDate);
 
 		} else {
@@ -65,19 +66,6 @@ public class RepubblicaDownloader {
 		// 1. Configure Webriver
 
 		WebDriver driver = setUpFirefox();
-
-		File dir = new File(downloadPath);
-		if (!dir.exists()) {
-
-			dir.mkdir();
-
-		}
-
-		if (!dir.exists()) {
-
-			System.err.println("No existe el directorio " + downloadPath);
-
-		}
 
 		System.out.println("1. Start Login");
 
@@ -101,41 +89,36 @@ public class RepubblicaDownloader {
 
 		if (version.getAttribute("data-image").contains(currentDate)) {
 
-			// 3. Get download link
-			System.out.println(
-					"URL Descarga: " + "https://quotidiano.repubblica.it/edicola/manager?service=download.pdf&data="
-							+ currentDate + "&issue=" + currentDate + "&testata=repubblica&sezione=nz_all");
-
-			// 2. Get Firefox profile path
-			Process proc;
-			try {
-
-				ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c",
-						"find /tmp/ -maxdepth 1 -name \"rust_mozprofile.*\" -printf \"%T+\\t%p\\n\" | sort | tail -1 | awk '{print $2}'");
-
-				proc = pb.start();
-
-				proc.waitFor();
-				StringBuffer output = new StringBuffer();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-				orgCookiesPath = reader.readLine() + "/cookies.sqlite";
-
-				destCookiesPath = downloadPath + "cookies.sqlite";
-
-				dumpFirefoxSqliteCookiesFile();
-
-			} catch (IOException | InterruptedException e1) {
-
-				e1.printStackTrace();
-			}
+			// Click en descarga pdf
+			driver.findElement(By.id("extra-content")).click();
 
 			try {
-				Thread.sleep(10000);
+
+				driver.get("https://quotidiano.repubblica.it/edicola/manager?service=download.pdf&data=" + currentDate2
+						+ "&issue=" + currentDate + "&testata=repubblica&sezione=nz_all");
 
 			} catch (Exception e) {
-				// TODO: handle exception
+
+				System.out.println("Cerramos sesion");
+
 			}
+
+			try {
+
+				driver.findElement(By.id("cont-login")).click();
+
+				// LogOut
+				driver.findElements(By.id("signin_submit")).get(1).click();
+
+			} catch (Exception e) {
+
+				System.out.println("Matamos sin cerrar sesion");
+
+			}
+
+		} else {
+
+			System.err.println("NO HAY VERSION DE " + currentDate);
 
 		}
 
@@ -152,10 +135,19 @@ public class RepubblicaDownloader {
 
 		System.setProperty("webdriver.gecko.driver", geckoPath);
 
+		FirefoxProfile firefoxProfile = new FirefoxProfile();
+
+		firefoxProfile.setPreference("pdfjs.disabled", true);
+		firefoxProfile.setPreference("browser.download.folderList", 2);
+		firefoxProfile.setPreference("browser.download.manager.showWhenStarting", false);
+		firefoxProfile.setPreference("browser.download.dir", downloadPath);
+		firefoxProfile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf");
+
 		DesiredCapabilities dc = DesiredCapabilities.firefox();
 		dc.setAcceptInsecureCerts(true);
 		dc.setJavascriptEnabled(true);
 		dc.setCapability(FirefoxDriver.MARIONETTE, true);
+		dc.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
 
 		WebDriver driver = new FirefoxDriver(dc);
 
