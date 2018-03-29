@@ -7,8 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
@@ -24,26 +26,6 @@ public class HandelsblattDownloader {
 	private static String destCookiesPath = null;
 
 	public static void main(String[] args) {
-
-		int count = 0;
-
-		while (count < 5) {
-			count++;
-
-			try {
-
-				run(args);
-				break;
-
-			} catch (Exception e) {
-				continue;
-			}
-
-		}
-
-	}
-
-	public static void run(String[] args) throws Exception {
 
 		// 0. Get args
 		if (args.length > 0) {
@@ -83,6 +65,18 @@ public class HandelsblattDownloader {
 		driver.findElement(By.id("password")).sendKeys("art59ba3");
 		driver.findElement(By.id("btn-submit")).click();
 
+		wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.linkText("ePaper")));
+
+		driver.findElement(By.linkText("ePaper")).click();
+
+		try {
+
+			Thread.sleep(30000);
+
+		} catch (Exception e) {
+
+		}
+
 		// 2. Get Firefox profile path
 		Process proc;
 		try {
@@ -112,6 +106,17 @@ public class HandelsblattDownloader {
 
 		} catch (Exception e) {
 			// TODO: handle exception
+		}
+
+		// Cerramos sesion
+		driver.get(loginUrl);
+
+		WebElement logout = driver.findElement(By.xpath("//a[contains(@data-command,\"loadInto\")]"));
+
+		if (logout != null) {
+
+			logout.click();
+
 		}
 
 		clearAndExit(driver);
