@@ -28,8 +28,8 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class SolDeMexicoDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String baseUrl = "https://issuu.com";
 	private static final String cambioUrl = "https://issuu.com/soldemexico/";
 
@@ -41,11 +41,14 @@ public class SolDeMexicoDownloader {
 
 	private static Calendar calendario = Calendar.getInstance();
 	private static String dateName = "";
+	private static String dateName2 = "";
 
 	private static DateFormat dayFormat = new SimpleDateFormat("dd");
+	private static DateFormat dayNumberFormat = new SimpleDateFormat("d");
 
 	private static String dia;
-
+	private static String diaNumber;
+	
 	private static Map<String, String> nameUrlPaper = null;
 	private static ArrayList<String> urls = null;
 
@@ -67,19 +70,14 @@ public class SolDeMexicoDownloader {
 			urlsFilePath = downloadPath + "URLs.txt";
 
 			// Current Date
-			//Date date = new Date();
-			Date date = null;
-			try {
-				date = new SimpleDateFormat("yyyy-MM-dd").parse("2018-04-30");
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Date date = new Date();
 			
 			dia = dayFormat.format(date);
+			diaNumber = dayNumberFormat.format(date);
 
 			dateName = dia + " de " + MES[date.getMonth()];
-
+			dateName2 = diaNumber + " de " + MES[date.getMonth()];
+			
 			System.out.println("Current Date: " + dateName);
 
 		} else {
@@ -118,7 +116,7 @@ public class SolDeMexicoDownloader {
 
 			System.out.println("#" + i + "  " + title);
 
-			if (title.contains(dateName)) {
+			if (title.contains(dateName) || title.contains(dateName2)) {
 
 				String href = newspaper.getAttribute("href");
 
