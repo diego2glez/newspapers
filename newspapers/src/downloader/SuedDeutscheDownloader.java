@@ -8,15 +8,14 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -27,8 +26,9 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
 public class SuedDeutscheDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	// private static final String geckoPath = "C:\\Users\\Diego
+	// Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String loginUrl = "https://login.kataweb.it/registrazione/repubblica.it/login.jsp?ssoOnly=false&backurl=https%3A%2F%2Fwww.repubblica.it%2Fsocial%2Fsites%2Frepubblica%2Fnazionale%2Floader.php%3FmClose%3D2%26backUrl%3Dhttps%253A%2F%2Fquotidiano.repubblica.it%2Fedicola%2Fmanager%253Fservice%253Dlogin.social&origin=null&optbackurl=https%3A%2F%2Fwww.repubblica.it%2Fsocial%2Fsites%2Frepubblica%2Fnazionale%2Floader.php%3FmClose%3D2%26backUrl%3Dhttps%253A%2F%2Fquotidiano.repubblica.it%2Fedicola%2Fmanager%253Fservice%253Dlogin.social";
 
 	private static String downloadPath = null;
@@ -106,6 +106,46 @@ public class SuedDeutscheDownloader {
 		wait.until(ExpectedConditions
 				.visibilityOfAllElementsLocatedBy(By.xpath("//img[contains(@class,'issue__cover')][1]")));
 
+		
+		Set<Cookie> cookies = driver.manage().getCookies();
+
+		for (Cookie cookie : cookies) {
+
+			if (cookie.getName().equals("sz")) {
+
+				Cookie cook = new Cookie(cookie.getName(), cookie.getValue(), cookie.getPath());
+
+				driver.manage().addCookie(cook);
+
+			}
+
+		}
+
+		System.out.println(driver.manage().getCookies().toString());
+		
+		// 2. Get Firefox profile path
+		Process proc;
+		try {
+
+			ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c",
+					"find /tmp/ -maxdepth 1 -name \"rust_mozprofile.*\" -printf \"%T+\\t%p\\n\" | sort | tail -1 | awk '{print $2}'");
+
+			proc = pb.start();
+
+			proc.waitFor();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+			orgCookiesPath = reader.readLine() + "/cookies.sqlite";
+
+			destCookiesPath = downloadPath + "cookies.sqlite";
+
+			dumpFirefoxSqliteCookiesFile();
+
+		} catch (IOException | InterruptedException e1) {
+
+			e1.printStackTrace();
+		}
+
 		// 2. Get issue id
 
 		String issueSrc = driver.findElement(By.xpath("//img[contains(@class,'issue__cover')][1]")).getAttribute("src");
@@ -150,29 +190,6 @@ public class SuedDeutscheDownloader {
 				e1.printStackTrace();
 			}
 
-		}
-
-		// 2. Get Firefox profile path
-		Process proc;
-		try {
-
-			ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c",
-					"find /tmp/ -maxdepth 1 -name \"rust_mozprofile.*\" -printf \"%T+\\t%p\\n\" | sort | tail -1 | awk '{print $2}'");
-
-			proc = pb.start();
-
-			proc.waitFor();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-			orgCookiesPath = reader.readLine() + "/cookies.sqlite";
-
-			destCookiesPath = downloadPath + "cookies.sqlite";
-
-			dumpFirefoxSqliteCookiesFile();
-
-		} catch (IOException | InterruptedException e1) {
-
-			e1.printStackTrace();
 		}
 
 		clearAndExit(driver);
