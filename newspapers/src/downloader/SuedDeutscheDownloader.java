@@ -162,7 +162,6 @@ public class SuedDeutscheDownloader {
 			proc = pb.start();
 
 			proc.waitFor();
-			StringBuffer output = new StringBuffer();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
 			orgCookiesPath = reader.readLine() + "/cookies.sqlite";
