@@ -21,8 +21,9 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
 public class ZinioDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	// private static final String geckoPath = "C:\\Users\\Diego
+	// Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String baseUrl = "https://www.zinio.com/es/";
 
 	private static String downloadPath = null;

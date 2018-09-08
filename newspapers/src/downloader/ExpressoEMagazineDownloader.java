@@ -52,6 +52,9 @@ public class ExpressoEMagazineDownloader {
 			}
 
 		}
+		
+		System.out.println("THIS IS THE END");
+		System.exit(0);
 
 	}
 
@@ -107,9 +110,9 @@ public class ExpressoEMagazineDownloader {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
 
 		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("jramongil@hotmail.com");
+		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("ramon@tenao.com");
 		driver.findElement(By.id("ctl00_lv1_txtPass")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("jose2017");
+		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("art59ba3");
 		driver.findElement(By.id("ctl00_lv1_ibLogin")).click();
 
 		wait = new WebDriverWait(driver, 15);
@@ -221,9 +224,9 @@ public class ExpressoEMagazineDownloader {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
 
 		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("jramongil@hotmail.com");
+		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("ramon@tenao.com");
 		driver.findElement(By.id("ctl00_lv1_txtPass")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("jose2017");
+		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("art59ba3");
 		driver.findElement(By.id("ctl00_lv1_ibLogin")).click();
 
 		wait = new WebDriverWait(driver, 15);

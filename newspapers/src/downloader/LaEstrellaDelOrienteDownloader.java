@@ -83,7 +83,7 @@ public class LaEstrellaDelOrienteDownloader {
 
 		// 2. Go to Cambio page
 		driver.get("http://www.laestrelladeloriente.com/index.php?option=com_k2&view=itemlist&layout=category&task=category&id=16");
-
+		
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 
 		WebElement iframe = null;
