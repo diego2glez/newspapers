@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -29,16 +30,22 @@ public class LaEstrellaDelOrienteMainDownloader {
 
 	// private static final String geckoPath = "/usr/bin/geckodriver";
 	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
-	private static final String laEstrellaUrl = "http://www.laestrelladeloriente.com";
+	private static String laEstrellaUrl = "http://www.leo.bo/";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
 
-	private static DateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
-	private static DateFormat dateFormat2 = new SimpleDateFormat("d-M-yyyy");
+	private static DateFormat dateYear = new SimpleDateFormat("yyyy");
+	private static DateFormat dateMonth = new SimpleDateFormat("MM");
+	private static DateFormat dateDay = new SimpleDateFormat("dd");
+	private static DateFormat dateDayOne = new SimpleDateFormat("d");
+	private static DateFormat dateMonthOne = new SimpleDateFormat("M");
 
-	private static String currentDate1;
-	private static String currentDate2;
+	private static String currentYear;
+	private static String currentMonth;
+	private static String currentDay;
+	private static String currentMonthOne;
+	private static String currentDayOne;
 
 	private static Map<String, String> nameUrlPaper = null;
 	private static ArrayList<String> urls = null;
@@ -67,9 +74,16 @@ public class LaEstrellaDelOrienteMainDownloader {
 			// Current Date
 			Date date = new Date();
 			// date.setDate(7);
-			currentDate1 = dateFormat1.format(date);
-			currentDate2 = dateFormat2.format(date);
-			System.out.println("Current Date: " + currentDate1 + " OR " + currentDate2);
+			currentYear = dateYear.format(date);
+			currentMonth = dateMonth.format(date);
+			currentDay = dateDay.format(date);
+			currentDayOne = dateDayOne.format(date);
+			currentMonthOne = dateMonthOne.format(date);
+
+			System.out.println("Current Date: " + dateYear + " - " + dateMonth + " - " + dateDay);
+
+			laEstrellaUrl = "http://www.leo.bo/" + currentYear + "/" + currentMonth + "/" + currentDay + "/edicion-"
+					+ currentDayOne + "-" + currentMonthOne + "-" + currentYear + "/";
 
 		} else {
 
@@ -91,92 +105,64 @@ public class LaEstrellaDelOrienteMainDownloader {
 
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.tagName("iframe"))));
+
 		WebElement iframe = null;
 
-		wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Edición Impresa")));
-		
-		//Open Edicion Impresa
-		driver.findElement(By.linkText("Edición Impresa")).click();
-		
-		// 3. Get Edicion Id
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("itemListLeading")));
+		// Switch Iframe
+		List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
 
-		WebElement edicionLinkElement = null;
+		System.out.println(iframes.toString());
 
-		try {
+		iframe = iframes.get(0);
 
-			edicionLinkElement = driver.findElement(By.partialLinkText(currentDate1));
+		driver.switchTo().frame(iframe);
 
-		} catch (Exception e) {
+		int count = 1;
+
+		while (count < 80) {
+
+			// Recuperamos todos los elementos que haya visibles
+			List<WebElement> elements = driver.findElements(By.className("page-image"));
+
+			for (WebElement e : elements) {
+
+				// Get line
+				String src = e.getAttribute("src");
+
+				String pageId = StringUtils.substringBetween(src, "items/", "/covers");
+
+				String pageNumber = e.getAttribute("data-page");
+
+				if (mainPageUrls.containsKey(pageNumber) || pageNumber == null) {
+					continue;
+				}
+
+				System.out.println(pageId + " --- " + pageNumber);
+
+				mainPageUrls.put(pageNumber, pageId);
+
+				System.out.println(
+						"https://cdn.flipsnack.com/collections/items/" + pageId + "/covers/page_1/original?v=1");
+
+				urls.add(pageNumber + "|https://cdn.flipsnack.com/collections/items/" + pageId
+						+ "/covers/page_1/original?v=1");
+
+			}
 
 			try {
+				TimeUnit.SECONDS.sleep(10);
 
-				edicionLinkElement = driver.findElement(By.partialLinkText(currentDate2));
+				((JavascriptExecutor) driver).executeScript("Backbone.Mediator.pub(WidgetEvent.NEXT_PAGE);");
 
-			} catch (Exception e2) {
-
-				System.out.println("NO RECUPERAMOS LINK DE PERIODICO!");
-
+				// iframe.findElement(By.className("flip-next-page")).click();
+				// iframe.findElement(By.cssSelector("#docView > div.page-navigation-view >
+				// div.flip-next-page.nav-button > svg.nav-button")).click();
+			} catch (Exception e) {
+				break;
 			}
 
-		}
-
-		if (edicionLinkElement != null) {
-
-			driver.get(edicionLinkElement.getAttribute("href"));
-
-			// Switch Iframe
-			iframe = driver.findElement(By.xpath("//iframe[contains(@src,\"flipsnack\")]"));
-
-			driver.switchTo().frame(iframe);
-
-			int count = 1;
-
-			while (count < 50) {
-
-				// Recuperamos todos los elementos que haya visibles
-				List<WebElement> elements = driver.findElements(By.className("page-image"));
-
-				for (WebElement e : elements) {
-
-					// Get line
-					String src = e.getAttribute("src");
-
-					String pageId = StringUtils.substringBetween(src, "items/", "/covers");
-
-					String pageNumber = e.getAttribute("data-page");
-
-					if (mainPageUrls.containsKey(pageNumber) || pageNumber == null) {
-						continue;
-					}
-
-					System.out.println(pageId + " --- " + pageNumber);
-
-					mainPageUrls.put(pageNumber, pageId);
-
-					System.out.println(
-							"https://cdn.flipsnack.com/collections/items/" + pageId + "/covers/page_1/original?v=1");
-
-					urls.add(pageNumber + "|https://cdn.flipsnack.com/collections/items/" + pageId
-							+ "/covers/page_1/original?v=1");
-
-				}
-
-				try {
-					driver.findElement(By.cssSelector(
-							"#docView > div.page-navigation-view > div.flip-next-page.nav-button > svg.nav-button"))
-							.click();
-				} catch (Exception e) {
-					break;
-				}
-
-				count++;
-
-			}
-
-		} else {
-
-			System.out.println("NO HAY PERIODICO!");
+			count++;
 
 		}
 
