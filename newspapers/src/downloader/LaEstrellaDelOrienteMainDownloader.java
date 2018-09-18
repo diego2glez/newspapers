@@ -28,8 +28,8 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class LaEstrellaDelOrienteMainDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static String laEstrellaUrl = "http://www.leo.bo/";
 
 	private static String downloadPath = null;
@@ -82,8 +82,7 @@ public class LaEstrellaDelOrienteMainDownloader {
 
 			System.out.println("Current Date: " + dateYear + " - " + dateMonth + " - " + dateDay);
 
-			laEstrellaUrl = "http://www.leo.bo/" + currentYear + "/" + currentMonth + "/" + currentDay + "/edicion-"
-					+ currentDayOne + "-" + currentMonthOne + "-" + currentYear + "/";
+			//laEstrellaUrl = "http://www.leo.bo/" + currentYear + "/" + currentMonth + "/" + currentDay + "/edicion-"+ currentDayOne + "-" + currentMonthOne + "-" + currentYear + "/";
 
 		} else {
 
@@ -105,6 +104,15 @@ public class LaEstrellaDelOrienteMainDownloader {
 
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 
+		//Enter the last newspaper
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.className("post-img")));
+		
+		String href = driver.findElement(By.xpath("//a[contains(@href,'edicion')]")).getAttribute("href");
+				
+		System.out.println(href);
+		
+		driver.get(href);
+		
 		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.tagName("iframe"))));
 
 		WebElement iframe = null;
@@ -151,7 +159,7 @@ public class LaEstrellaDelOrienteMainDownloader {
 			}
 
 			try {
-				TimeUnit.SECONDS.sleep(10);
+				TimeUnit.SECONDS.sleep(5);
 
 				((JavascriptExecutor) driver).executeScript("Backbone.Mediator.pub(WidgetEvent.NEXT_PAGE);");
 
