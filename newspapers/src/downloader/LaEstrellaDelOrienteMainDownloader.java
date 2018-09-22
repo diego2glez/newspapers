@@ -28,8 +28,8 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class LaEstrellaDelOrienteMainDownloader {
 
-	//private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\Desktop\\Workspace\\Git\\newspapers\\newspapers\\lib\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\Desktop\\Workspace\\Git\\newspapers\\newspapers\\lib\\geckodriver.exe";
 	private static String laEstrellaUrl = "http://www.leo.bo/";
 
 	private static String downloadPath = null;
