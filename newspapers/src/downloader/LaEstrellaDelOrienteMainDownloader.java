@@ -28,8 +28,8 @@ import com.machinepublishers.jbrowserdriver.Settings;
 
 public class LaEstrellaDelOrienteMainDownloader {
 
-	private static final String geckoPath = "/usr/bin/geckodriver";
-	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	//private static final String geckoPath = "/usr/bin/geckodriver";
+	private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\Desktop\\Workspace\\Git\\newspapers\\newspapers\\lib\\geckodriver.exe";
 	private static String laEstrellaUrl = "http://www.leo.bo/";
 
 	private static String downloadPath = null;
@@ -105,7 +105,7 @@ public class LaEstrellaDelOrienteMainDownloader {
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 
 		//Enter the last newspaper
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.className("post-img")));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[contains(@href,'edicion')]")));
 		
 		String href = driver.findElement(By.xpath("//a[contains(@href,'edicion')]")).getAttribute("href");
 				
