@@ -37,6 +37,29 @@ public class ExpressoEMagazineDownloader {
 	
 	public static void main(String[] args) {
 
+		int count = 0;
+
+		while (count < 5) {
+			count++;
+
+			try {
+
+				run(args);
+				break;
+
+			} catch (Exception e) {
+				continue;
+			}
+
+		}
+		
+		System.out.println("THIS IS THE END");
+		System.exit(0);
+
+	}
+
+	public static void run(String[] args) throws Exception {
+
 		// 0. Get args
 		if (args.length > 0) {
 
@@ -87,9 +110,9 @@ public class ExpressoEMagazineDownloader {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
 
 		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("jramongil@hotmail.com");
+		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("ramon@tenao.com");
 		driver.findElement(By.id("ctl00_lv1_txtPass")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("jose2017");
+		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("art59ba3");
 		driver.findElement(By.id("ctl00_lv1_ibLogin")).click();
 
 		wait = new WebDriverWait(driver, 15);
@@ -159,6 +182,13 @@ public class ExpressoEMagazineDownloader {
 
 		}
 		
+		System.out.println("PageCount = " + pageCount);
+
+		if (images.size() != childs.size()) {
+			throw new Exception();
+
+		}
+		
 		// 8. Iterate over pages and write to temp file
 		pagesIterator = images.iterator();
 
@@ -194,9 +224,9 @@ public class ExpressoEMagazineDownloader {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
 
 		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("jramongil@hotmail.com");
+		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("ramon@tenao.com");
 		driver.findElement(By.id("ctl00_lv1_txtPass")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("jose2017");
+		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("art59ba3");
 		driver.findElement(By.id("ctl00_lv1_ibLogin")).click();
 
 		wait = new WebDriverWait(driver, 15);

@@ -25,7 +25,6 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
 public class ExpressoEconomiaMagazineDownloader {
 
-
 	private static final String geckoPath = "/usr/bin/geckodriver";
 	private static final String baseUrl = "http://expresso.lojaimpresa.pt/";
 
@@ -34,8 +33,31 @@ public class ExpressoEconomiaMagazineDownloader {
 
 	private static String orgCookiesPath = null;
 	private static String destCookiesPath = null;
-	
+
 	public static void main(String[] args) {
+
+		int count = 0;
+
+		while (count < 5) {
+			count++;
+
+			try {
+
+				run(args);
+				break;
+
+			} catch (Exception e) {
+				continue;
+			}
+
+		}
+		
+		System.out.println("THIS IS THE END");
+		System.exit(0);
+
+	}
+
+	public static void run(String[] args) throws Exception {
 
 		// 0. Get args
 		if (args.length > 0) {
@@ -87,27 +109,26 @@ public class ExpressoEconomiaMagazineDownloader {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
 
 		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("jramongil@hotmail.com");
+		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("ramon@tenao.com");
 		driver.findElement(By.id("ctl00_lv1_txtPass")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("jose2017");
+		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("art59ba3");
 		driver.findElement(By.id("ctl00_lv1_ibLogin")).click();
 
 		wait = new WebDriverWait(driver, 15);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_ibLogout")));
 
-		
-		//3. Open actual edition
+		// 3. Open actual edition
 		driver.findElement(By.id("ctl00_cph_dvtDay")).click();
 		wait = new WebDriverWait(driver, 15);
-		
-		//4. Open suplement economy
+
+		// 4. Open suplement economy
 		wait.until(ExpectedConditions.visibilityOfElementLocated((By.id("ctl00_cph_dlSupDay"))));
-		
+
 		WebElement supDay = driver.findElement(By.id("ctl00_cph_dlSupDay"));
 		List<WebElement> suplements = supDay.findElements(By.xpath(".//img"));
-		
+
 		suplements.get(0).click();
-				
+
 		// 4. Preparing viewer
 		wait = new WebDriverWait(driver, 15);
 		wait.until(ExpectedConditions.elementToBeClickable(By.id("ctl00_ibSwitch")));
@@ -139,13 +160,13 @@ public class ExpressoEconomiaMagazineDownloader {
 			page.click();
 
 			try {
-			wait = new WebDriverWait(driver, 60);
-			wait.until(ExpectedConditions.attributeContains(By.id("ctl00_cph_viewer1_imgPage"), "src", "f" + pageCount));
-			}catch (StaleElementReferenceException e) {
-				//CONTINUE
+				wait = new WebDriverWait(driver, 60);
+				wait.until(ExpectedConditions.attributeContains(By.id("ctl00_cph_viewer1_imgPage"), "src",
+						"f" + pageCount));
+			} catch (StaleElementReferenceException e) {
+				// CONTINUE
 			}
-			
-			
+
 			String url = (String) ((JavascriptExecutor) driver)
 					.executeScript("return $(vprex + 'imgPage').attr('src');");
 
@@ -158,7 +179,14 @@ public class ExpressoEconomiaMagazineDownloader {
 			images.add(urlDownload);
 
 		}
-		
+
+		System.out.println("PageCount = " + pageCount);
+
+		if (images.size() != childs.size()) {
+			throw new Exception();
+
+		}
+
 		// 8. Iterate over pages and write to temp file
 		pagesIterator = images.iterator();
 
@@ -179,11 +207,11 @@ public class ExpressoEconomiaMagazineDownloader {
 
 			e1.printStackTrace();
 		}
-		
+
 		clearAndExit(driver);
-		
+
 		driver = setUpFirefox();
-		
+
 		System.out.println("1. Start Login");
 
 		// 1. Login
@@ -194,45 +222,45 @@ public class ExpressoEconomiaMagazineDownloader {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
 
 		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("jramongil@hotmail.com");
+		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("ramon@tenao.com");
 		driver.findElement(By.id("ctl00_lv1_txtPass")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("jose2017");
+		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("art59ba3");
 		driver.findElement(By.id("ctl00_lv1_ibLogin")).click();
 
 		wait = new WebDriverWait(driver, 15);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_ibLogout")));
-		
-		//2. Get Firefox profile path
+
+		// 2. Get Firefox profile path
 		Process proc;
 		try {
-		
+
 			ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c",
 					"find /tmp/ -maxdepth 1 -name \"rust_mozprofile.*\" -printf \"%T+\\t%p\\n\" | sort | tail -1 | awk '{print $2}'");
-		
-			proc = pb.start(); 
-		
+
+			proc = pb.start();
+
 			proc.waitFor();
 			StringBuffer output = new StringBuffer();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-		
+
 			orgCookiesPath = reader.readLine() + "/cookies.sqlite";
-			
+
 			destCookiesPath = downloadPath + "cookies.sqlite";
-			
+
 			dumpFirefoxSqliteCookiesFile();
-			
+
 		} catch (IOException | InterruptedException e1) {
-			
+
 			e1.printStackTrace();
 		}
-		
+
 		try {
 			Thread.sleep(10000);
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 		clearAndExit(driver);
 
 		System.out.println("DONE");
@@ -254,14 +282,14 @@ public class ExpressoEconomiaMagazineDownloader {
 		WebDriver driver = new FirefoxDriver(dc);
 
 		driver.manage().deleteAllCookies();
-		
+
 		// Set check loop in WebDriverWaits
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
 		return driver;
 
 	}
-	
+
 	private static WebDriver setUpJBrowser() {
 
 		// 0. Creacion de directorio y configuracion del webdriver
@@ -270,27 +298,26 @@ public class ExpressoEconomiaMagazineDownloader {
 		WebDriver driver = new JBrowserDriver();
 
 		driver.manage().deleteAllCookies();
-		
+
 		// Set check loop in WebDriverWaits
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
 		return driver;
 
 	}
-	
+
 	// Dump Firefox Cookies Database to DownloadPath
 	private static void dumpFirefoxSqliteCookiesFile() throws IOException {
-		
-		ProcessBuilder pb = new ProcessBuilder("/bin/bash","-c","rm " + destCookiesPath);
-		
+
+		ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "rm " + destCookiesPath);
+
 		pb.start();
-		
+
 		ProcessBuilder pb2 = new ProcessBuilder("/bin/bash", "-c",
-				"echo \".dump\" | sqlite3 " + orgCookiesPath
-				+ " | sqlite3 " + destCookiesPath);
-		
+				"echo \".dump\" | sqlite3 " + orgCookiesPath + " | sqlite3 " + destCookiesPath);
+
 		pb2.start();
-		
+
 	}
 
 	// Clean and Close
@@ -298,7 +325,6 @@ public class ExpressoEconomiaMagazineDownloader {
 
 		driver.manage().deleteAllCookies();
 		driver.quit();
-		
 
 	}
 

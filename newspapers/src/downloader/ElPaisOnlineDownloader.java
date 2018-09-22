@@ -57,7 +57,7 @@ public class ElPaisOnlineDownloader {
 		}
 
 		// 1. Configure Webriver
-		WebDriver driver = setUpJBrowser();
+		WebDriver driver = setUpFirefox();// setUpJBrowser();
 
 		System.out.println("1. Start Login");
 
@@ -87,6 +87,8 @@ public class ElPaisOnlineDownloader {
 
 			String newspaperName = "Impresion" + i;
 
+			WebElement link = null;
+
 			try {
 				// Get newspaper name
 				newspaperName = newspaper.findElement(By.className("catItemTitle")).findElement(By.tagName("a"))
@@ -96,28 +98,30 @@ public class ElPaisOnlineDownloader {
 
 				System.out.println(newspaperName);
 
+				// Open paper
+				newspaper.findElement(By.className("img-responsive")).click();
+
+				// Find container div
+				wait = new WebDriverWait(driver, 30);
+				wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("itemFullText")));
+
+				// Switch to iframe
+				WebElement container = driver.findElement(By.className("itemFullText"));
+				WebElement iframe = container.findElement(By.xpath("//iframe"));
+				driver.switchTo().frame(iframe);
+
+				// Find link
+				link = driver.findElement(By.xpath("//a[contains(@href,'pagina')]"));
+
 			} catch (Exception e) {
 				System.err.println("Couldn't get newspaper name");
 			}
 
-			// Open paper
-			newspaper.findElement(By.className("img-responsive")).click();
+			if (link != null) {
+				String href = link.getAttribute("href");
 
-			// Find container div
-			wait = new WebDriverWait(driver, 30);
-			wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("itemFullText")));
-
-			// Switch to iframe
-			WebElement container = driver.findElement(By.className("itemFullText"));
-			WebElement iframe = container.findElement(By.xpath("//iframe"));
-			driver.switchTo().frame(iframe);
-
-			// Find link
-			WebElement link = driver.findElement(By.xpath("//a[contains(@href,'pagina')]"));
-
-			String href = link.getAttribute("href");
-
-			urls.add(newspaperName + "|" + href.substring(0, href.lastIndexOf("/")));
+				urls.add(newspaperName + "|" + href.substring(0, href.lastIndexOf("/")));
+			}
 
 			// Go back
 			driver.get(baseUrl);

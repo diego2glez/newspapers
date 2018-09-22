@@ -26,15 +26,18 @@ import com.machinepublishers.jbrowserdriver.Settings;
 public class LaEstrellaDelOrienteDownloader {
 
 	private static final String geckoPath = "/usr/bin/geckodriver";
-	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
+	// private static final String geckoPath = "C:\\Users\\Diego
+	// Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
 	private static final String laEstrellaUrl = "http://www.laestrelladeloriente.com";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
 
-	private static DateFormat dateFormat1 = new SimpleDateFormat("d-M-yyyy");
+	private static DateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
+	private static DateFormat dateFormat2 = new SimpleDateFormat("d-M-yyyy");
 
 	private static String currentDate1;
+	private static String currentDate2;
 
 	private static Map<String, String> nameUrlPaper = null;
 	private static ArrayList<String> urls = null;
@@ -55,14 +58,15 @@ public class LaEstrellaDelOrienteDownloader {
 			}
 
 			urlsFilePath = downloadPath + "URLs.txt";
-			
+
 			urls = new ArrayList<String>();
 
 			// Current Date
 			Date date = new Date();
-			date.setDate(7);
+			// date.setDate(7);
 			currentDate1 = dateFormat1.format(date);
-			System.out.println("Current Date: " + currentDate1);
+			currentDate2 = dateFormat2.format(date);
+			System.out.println("Current Date: " + currentDate1 + " OR " + currentDate2);
 
 		} else {
 
@@ -78,59 +82,111 @@ public class LaEstrellaDelOrienteDownloader {
 		System.out.println("1. Start Login");
 
 		// 2. Go to Cambio page
-		driver.get(laEstrellaUrl);
-
-		WebDriverWait wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Edición Impresa")));
-
-		driver.findElement(By.linkText("Edición Impresa")).click();
+		driver.get("http://www.laestrelladeloriente.com/index.php?option=com_k2&view=itemlist&layout=category&task=category&id=16");
 		
-		//3. Get Edicion Id
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+
+		WebElement iframe = null;
+
+		// 3. Get Edicion Id
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("itemListLeading")));
-		
-		WebElement edicionLinkElement = driver.findElement(By.xpath("//a[contains(@title, \"Edición "+currentDate1+"\")]"));
-				
-		driver.get(edicionLinkElement.getAttribute("href"));
-		
-		//Switch Iframe
-		WebElement iframe = driver.findElement(By.xpath("//iframe[contains(@src,\"flipsnack\")]"));
-		
-		driver.switchTo().frame(iframe);
-		
-		WebElement edicionIdElement = driver.findElement(By.xpath("//script[contains(@src, \"links.js\")]"));
-		
-		String edicionIdRaw = edicionIdElement.getAttribute("src");
-		
-		String edicionId = StringUtils.substringBetween(edicionIdRaw,"items/","/json");
-		
-		System.out.println(edicionId);
-		
-		urls.add("Edicion|"+edicionId);
-		
-		//4. Get Sports Id
-		driver.get("http://www.laestrelladeloriente.com/index.php?option=com_k2&view=itemlist&layout=category&task=category&id=19&Itemid=794");
+
+		WebElement edicionLinkElement = null;
+
+		try {
+
+			edicionLinkElement = driver.findElement(By.partialLinkText(currentDate1));
+
+		} catch (Exception e) {
+
+			try {
+
+				edicionLinkElement = driver.findElement(By.partialLinkText(currentDate2));
+
+			} catch (Exception e2) {
+
+				System.out.println("NO RECUPERAMOS LINK DE PERIODICO!");
+
+			}
+
+		}
+
+		if (edicionLinkElement != null) {
+
+			driver.get(edicionLinkElement.getAttribute("href"));
+
+			// Switch Iframe
+			iframe = driver.findElement(By.xpath("//iframe[contains(@src,\"flipsnack\")]"));
+
+			driver.switchTo().frame(iframe);
+
+			WebElement edicionIdElement = driver.findElement(By.xpath("//script[contains(@src, \"links.js\")]"));
+
+			String edicionIdRaw = edicionIdElement.getAttribute("src");
+
+			String edicionId = StringUtils.substringBetween(edicionIdRaw, "items/", "/json");
+
+			System.out.println(edicionId);
+
+			urls.add("Edicion|" + edicionId);
+
+		} else {
+
+			System.out.println("NO HAY PERIODICO!");
+
+		}
+
+		// 4. Get Sports Id
+		driver.get(
+				"http://www.laestrelladeloriente.com/index.php?option=com_k2&view=itemlist&layout=category&task=category&id=19&Itemid=794");
 
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("itemListLeading")));
-		
-		WebElement deportesLinkElement = driver.findElement(By.xpath("//a[contains(@title, \"Deportes "+currentDate1+"\")]"));
-				
-		driver.get(deportesLinkElement.getAttribute("href"));
-		
-		//Switch Iframe
-		iframe = driver.findElement(By.xpath("//iframe[contains(@src,\"flipsnack\")]"));
-		
-		driver.switchTo().frame(iframe);
-		
-		WebElement deportesIdElement = driver.findElement(By.xpath("//script[contains(@src, \"links.js\")]"));
-		
-		String deportesIdRaw = deportesIdElement.getAttribute("src");
-		
-		String deportesId = StringUtils.substringBetween(deportesIdRaw,"items/","/json");
-		
-		System.out.println(deportesId);
-		
-		urls.add("Deportes|"+deportesId);
-		
+
+		WebElement deportesLinkElement = null;
+
+		try {
+
+			deportesLinkElement = driver.findElement(By.partialLinkText(currentDate1));
+
+		} catch (Exception e) {
+
+			try {
+
+				deportesLinkElement = driver.findElement(By.partialLinkText(currentDate2));
+
+			} catch (Exception e2) {
+
+				System.out.println("NO RECUPERAMOS LINK DE DEPORTES!");
+
+			}
+
+		}
+
+		if (deportesLinkElement != null) {
+
+			driver.get(deportesLinkElement.getAttribute("href"));
+
+			// Switch Iframe
+			iframe = driver.findElement(By.xpath("//iframe[contains(@src,\"flipsnack\")]"));
+
+			driver.switchTo().frame(iframe);
+
+			WebElement deportesIdElement = driver.findElement(By.xpath("//script[contains(@src, \"links.js\")]"));
+
+			String deportesIdRaw = deportesIdElement.getAttribute("src");
+
+			String deportesId = StringUtils.substringBetween(deportesIdRaw, "items/", "/json");
+
+			System.out.println(deportesId);
+
+			urls.add("Deportes|" + deportesId);
+
+		} else {
+
+			System.out.println("NO HAY DEPORTES");
+
+		}
+
 		// Write urls to file
 		BufferedWriter outputWriter;
 		Iterator urlsIterator = urls.iterator();
@@ -179,7 +235,7 @@ public class LaEstrellaDelOrienteDownloader {
 		driver.manage().deleteAllCookies();
 
 		// Set check loop in WebDriverWaits
-		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
 
 		return driver;
 
