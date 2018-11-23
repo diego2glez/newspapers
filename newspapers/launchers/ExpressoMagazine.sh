@@ -26,7 +26,7 @@ wgetCookiesPath="${directoryPath}cookies.txt"
 	fi
 
 	#Run Selenium jar
-	xvfb-run -a java -jar /home/vnc/Escritorio/Periodicos/Scripts/ExpressoMagazineDownloader.jar ${directoryPath} >& /tmp/salidaExpressoMagazineXVFB.log
+	xvfb-run -a /home/vnc/JDK8/jdk1.8.0_191/jre/bin/java -jar /home/vnc/Escritorio/Periodicos/Scripts/ExpressoMagazineDownloader.jar ${directoryPath} >& /tmp/salidaExpressoMagazineXVFB.log
 		
 	#Run extract_firefox_cookies.sh script on Firefox cookies.sqlite to convert them to wget "cookies.txt" format
 	/bin/sh /home/vnc/Escritorio/Periodicos/Scripts/extract_firefox_cookies.sh "${firefoxSqlitePath}" > "${wgetCookiesPath}"

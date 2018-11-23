@@ -103,9 +103,9 @@ public class ExpressoMagazineDownloader {
 
 		// 1. Login
 		driver.get(baseUrl);
-
+		
 		// Wait for login textbox
-		WebDriverWait wait = new WebDriverWait(driver, 30);
+		WebDriverWait wait = new WebDriverWait(driver, 60);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
 
 		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
