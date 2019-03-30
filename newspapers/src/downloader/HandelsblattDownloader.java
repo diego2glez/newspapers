@@ -19,6 +19,7 @@ public class HandelsblattDownloader {
 
 	private static final String geckoPath = "/usr/bin/geckodriver";
 	private static final String loginUrl = "http://www.handelsblatt.com/";
+	private static final String logoutUrl = "https://id.handelsblatt.com/logout?service=https%3A%2F%2Fepaper.handelsblatt.com%2F";
 
 	private static String downloadPath = null;
 
@@ -109,15 +110,15 @@ public class HandelsblattDownloader {
 		}
 
 		// Cerramos sesion
-		driver.get(loginUrl);
+		driver.get(logoutUrl);
 
-		WebElement logout = driver.findElement(By.xpath("//a[contains(@data-command,\"loadInto\")]"));
+		//WebElement logout = driver.findElement(By.xpath("//a[contains(@data-command,\"loadInto\")]"));
 
-		if (logout != null) {
+		/*if (logout != null) {
 
 			logout.click();
 
-		}
+		}*/
 
 		clearAndExit(driver);
 
