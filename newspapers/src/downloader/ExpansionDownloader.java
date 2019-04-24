@@ -25,8 +25,9 @@ import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
 public class ExpansionDownloader {
 
-	// private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String geckoPath = "D:\\Workstation\\LIBRARY\\geckodriver\\geckodriver.exe";
+	private static final String geckoPath = "/usr/bin/geckodriver";
+	// private static final String geckoPath =
+	// "D:\\Workstation\\LIBRARY\\geckodriver\\geckodriver.exe";
 	private static final String loginUrl = "https://seguro.orbyt.es/registro/registro.html";
 
 	private static String rootXMLUrl = "http://quiosco.expansionpro.orbyt.es/epaper/xml_epaper/Expansi%C3%B3n/%DATE%/init_pub.xml";
@@ -43,22 +44,22 @@ public class ExpansionDownloader {
 	private static String orgCookiesPath = null;
 	private static String destCookiesPath = null;
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 
 		int count = 0;
 
 		while (count < 5) {
 			count++;
 
-			// try {
+			try {
 
-			run(args);
-			break;
+				run(args);
+				break;
 
-			// } catch (Exception e) {
-			// System.out.println(e.getMessage());
-			// continue;
-			// }
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				continue;
+			}
 
 		}
 

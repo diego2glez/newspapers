@@ -20,6 +20,8 @@ fechaJson=$(date +"%Y-%m-%d")
 	
 	jsonPostLine="{\"editions\":[{\"defId\":\"11\",\"publicationDate\":\"${fechaJson}\"}],\"isAttachment\":true,\"fileName\":\"Gesamtausgabe_Handelsblatt_${fechaJson}.pdf\"}"
 
+	echo "${jsonPostLine}" > /tmp/salidaHandelsblattJSO.log
+
 	# Check directory
 	if [ ! -d $directoryPath ]; then
 			echo "Create ${directoryPath}"
@@ -37,7 +39,7 @@ fechaJson=$(date +"%Y-%m-%d")
 	#Run extract_firefox_cookies.sh script on Firefox cookies.sqlite to convert them to wget "cookies.txt" format
 	/bin/sh /home/vnc/Escritorio/Periodicos/Scripts/extract_firefox_cookies.sh "${firefoxSqlitePath}" > "${wgetCookiesPath}"
 	
-	curl -trace-ascii 'https://epaper.handelsblatt.com/index.cfm/epaper/1.0/getEditionDoc' -H 'Content-Type: application/json' -d ${jsonPostLine} -H 'Connection: keep-alive'  --cookie ${wgetCookiesPath} > "${salidaJson}"
+	curl --trace "/tmp/curl.out" -trace-ascii 'https://epaper.handelsblatt.com/index.cfm/epaper/1.0/getEditionDoc' -H 'Content-Type: application/json' -d ${jsonPostLine} -H 'Connection: keep-alive'  --cookie ${wgetCookiesPath} > "${salidaJson}"
 		
 	urlPdf=`cat ${salidaJson} | awk -F '"' '{print $6}'`
 	

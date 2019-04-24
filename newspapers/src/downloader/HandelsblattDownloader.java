@@ -110,7 +110,7 @@ public class HandelsblattDownloader {
 		}
 
 		// Cerramos sesion
-		driver.get(logoutUrl);
+		//driver.get(logoutUrl);
 
 		//WebElement logout = driver.findElement(By.xpath("//a[contains(@data-command,\"loadInto\")]"));
 
@@ -182,7 +182,7 @@ public class HandelsblattDownloader {
 	// Clean and Close
 	private static void clearAndExit(WebDriver driver) {
 
-		driver.manage().deleteAllCookies();
+		//driver.manage().deleteAllCookies();
 		driver.quit();
 
 	}
