@@ -1,26 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/selenium/client-combined-3.7.1.jar"/>
-	<classpathentry kind="lib" path="lib/selenium/selenium-server-standalone-3.7.1.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/jbrowserdriver-0.17.11.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/animal-sniffer-annotations-1.14.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/checker-qual-2.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jbrowserdriver/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="lib/jbrowserdriver/commons-io-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/jbrowserdriver/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/jbrowserdriver/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/fast-classpath-scanner-2.0.16.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/guava-19.0.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/httpclient-4.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/httpclient-cache-4.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/httpcore-4.4.4.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/jna-3.0.9.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/selenium-api-2.53.0.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/selenium-remote-driver-2.53.0.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/selenium-server-2.53.0.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/slf4j-api-1.7.2.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/zt-exec-1.7.jar"/>
-	<classpathentry kind="lib" path="lib/jbrowserdriver/zt-process-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/error_prone_annotations-2.0.18.jar"/>
+	<classpathentry kind="lib" path="lib/selenium/client-combined-3.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/fast-classpath-scanner-2.9.3.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/guava-23.5-jre.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/htmlunit-cssparser-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/httpclient-4.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/httpclient-cache-4.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/httpcore-4.4.7.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/j2objc-annotations-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/jbrowserdriver-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/jna-4.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/jsr305-1.3.9.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/okhttp-3.10.0.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/okio-1.14.1.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/slf4j-simple-1.7.25.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/zt-exec-1.7.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/zt-process-killer-1.8.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver-0.8.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/selenium-server-3.14.0.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/selenium-api-3.14.0.jar"/>
+	<classpathentry kind="lib" path="lib/jbrowserdriver/selenium-remote-driver-3.14.0.jar"/>
+	<classpathentry kind="lib" path="lib/selenium/selenium-server-standalone-3.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

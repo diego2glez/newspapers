@@ -2,10 +2,9 @@
 #fecha=$(date +"%Y_%W")
 fileName="VisaoMagazine"
 directoryPath="/home/vnc/Escritorio/Periodicos/PT-VisaoMagazine/"
-#directoryPath="/tmp/VisaoMagazineDownloader/"
-urlsFilePath="${directoryPath}URLs.txt"
-firefoxSqlitePath="${directoryPath}cookies.sqlite"
-wgetCookiesPath="${directoryPath}cookies.txt"
+tempDirectoryPath="/tmp/VisaoMagazineDownloader/"
+urlsFilePath="${tempDirectoryPath}URLs.txt"
+firefoxSqlitePath="${tempDirectoryPath}cookies.sqlite"
 
 
 	echo "Check if exists $directoryPath"
@@ -25,12 +24,19 @@ wgetCookiesPath="${directoryPath}cookies.txt"
         	exit
 	fi
 
+	rm -rf $tempDirectoryPath
+
+        # Check directory
+        if [ ! -d $tempDirectoryPath ]; then
+                echo "Create ${tempDirectoryPath}"
+                mkdir $tempDirectoryPath
+        fi
+
 	#Run Selenium jar
-	xvfb-run -a java -jar /home/vnc/Escritorio/Periodicos/Scripts/VisaoMagazineDownloader.jar ${directoryPath} >& /tmp/salidaVisoMagazineXVFB.log
-		
-	#Run extract_firefox_cookies.sh script on Firefox cookies.sqlite to convert them to wget "cookies.txt" format
-	/bin/sh /home/vnc/Escritorio/Periodicos/Scripts/extract_firefox_cookies.sh "${firefoxSqlitePath}" > "${wgetCookiesPath}"
-	
+	xvfb-run -a java -jar /home/vnc/Escritorio/Periodicos/Scripts/VisaoMagazineDownloader.jar ${tempDirectoryPath} >& /tmp/salidaVisoMagazineXVFB.log
+
+	echo "Fin Java"
+
 	#Iterate over URLs file and download them whit WGET and extracted cookies
 	count=0
 	jpgFileList=()
@@ -38,11 +44,13 @@ wgetCookiesPath="${directoryPath}cookies.txt"
     
 		let count=count+1
 	
-		imageName="${directoryPath}visao_${count}.jpg"
+		imageName="${directoryPath}visao_${count}.pdf"
 		
+		echo "Imagen ${imageName}"
+
 		jpgFileList+=("${imageName}")
 	
-		wget -P $directoryPath --load-cookies $wgetCookiesPath -O  $imageName $line
+		wget -P $directoryPath -O  $imageName $line
 	
 		ret=$?
 	
@@ -59,5 +67,4 @@ wgetCookiesPath="${directoryPath}cookies.txt"
 	convert $var "${pdfPath}"
 	
 	#Delete temp files
-	rm $var $urlsFilePath $firefoxSqlitePath $wgetCookiesPath
-	
+	rm $var $urlsFilePath

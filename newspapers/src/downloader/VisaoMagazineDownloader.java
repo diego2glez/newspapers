@@ -1,42 +1,58 @@
 package downloader;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.machinepublishers.jbrowserdriver.JBrowserDriver;
+
 public class VisaoMagazineDownloader {
 
 	private static final String geckoPath = "/usr/bin/geckodriver";
-	private static final String baseUrl = "http://visao.assineja.pt/";
+	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\Desktop\\Workspace\\Git\\newspapers\\newspapers\\lib\\geckodriver.exe";
+	private static final String baseUrl = "http://visaodigitalsubs.visao.pt/";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
 
-	private static String orgCookiesPath = null;
-	private static String destCookiesPath = null;
-	
+	private static ArrayList<String> urls = null;
+
 	public static void main(String[] args) {
+
+		int count = 0;
+
+		while (count < 5) {
+			count++;
+
+			try {
+
+				run(args);
+				System.out.println("COMPLETADO BREAK");
+				break;
+
+			} catch (Exception e) {
+				continue;
+			}
+
+		}
+
+		System.out.println("THIS IS THE END");
+		System.exit(0);
+
+	}
+
+	public static void run(String[] args) throws Exception {
 
 		// 0. Get args
 		if (args.length > 0) {
@@ -62,21 +78,7 @@ public class VisaoMagazineDownloader {
 		}
 
 		// 1. Configure Webriver
-
-		WebDriver driver = setUp();
-
-		File dir = new File(downloadPath);
-		if (!dir.exists()) {
-
-			dir.mkdir();
-
-		}
-
-		if (!dir.exists()) {
-
-			System.err.println("No existe el directorio " + downloadPath);
-
-		}
+		WebDriver driver = setUpFirefox();
 
 		System.out.println("1. Start Login");
 
@@ -85,115 +87,53 @@ public class VisaoMagazineDownloader {
 
 		// Wait for login textbox
 		WebDriverWait wait = new WebDriverWait(driver, 30);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_txtLogin")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("id_login")));
 
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtLogin")).sendKeys("jramongil@hotmail.com");
-		driver.findElement(By.id("ctl00_lv1_txtPass")).clear();
-		driver.findElement(By.id("ctl00_lv1_txtPass")).sendKeys("jose2017");
-		driver.findElement(By.id("ctl00_lv1_ibLogin")).click();
+		driver.findElement(By.id("id_login")).clear();
+		driver.findElement(By.id("id_login")).sendKeys("ramon@tenao.com");
+		driver.findElement(By.id("id_password")).clear()	;
+		driver.findElement(By.id("id_password")).sendKeys("art58ba3");
+		driver.findElement(By.className("btn")).click();
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.className("howTo-continue")));
+		
+		// 3. Get pag lenght
+		long lenght = (long) ((JavascriptExecutor) driver).executeScript("return flatPlanData.pageGroups.length");
 
-		wait = new WebDriverWait(driver, 15);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_lv1_ibLogout")));
+		System.out.println("Num pages " + lenght);
 
-		// 2. Get Firefox profile path
-		Process proc;
-		try {
+		urls = new ArrayList<String>();
 
-			ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c",
-					"find /tmp/ -maxdepth 1 -name \"rust_mozprofile.*\" -printf \"%T+\\t%p\\n\" | sort | tail -1 | awk '{print $2}'");
+		// 4. Iterate through pages
+		long pageCount = 0;
+		while (pageCount < lenght) {
 
-			proc = pb.start();
+			// Get page pdf
+			String url = (String) ((JavascriptExecutor) driver)
+					.executeScript("return flatPlanData.pageGroups[" + pageCount + "].pages[0].pdf");
 
-			proc.waitFor();
-			StringBuffer output = new StringBuffer();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			System.out.println("Page[" + pageCount + "]: " + url);
 
-			orgCookiesPath = reader.readLine() + "/cookies.sqlite";
+			urls.add(url);
 
-			destCookiesPath = downloadPath + "cookies.sqlite";
-
-			dumpFirefoxSqliteCookiesFile();
-
-		} catch (IOException | InterruptedException e1) {
-
-			e1.printStackTrace();
-		}
-
-		// 3. Open actual edition
-		driver.findElement(By.id("ctl00_cph_dvtDay")).click();
-		wait = new WebDriverWait(driver, 15);
-		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("img.thumbsmall")));
-		driver.findElement(By.cssSelector("img.thumbsmall")).click();
-
-		// 4. Preparing viewer
-		wait = new WebDriverWait(driver, 15);
-		wait.until(ExpectedConditions.elementToBeClickable(By.id("ctl00_ibSwitch")));
-		driver.findElement(By.id("ctl00_ibSwitch")).click();
-
-		// 5. Looking for index
-		wait = new WebDriverWait(driver, 15);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bvdMenuImg")));
-
-		WebElement bvdMenuImg = null;
-		bvdMenuImg = driver.findElement(By.id("bvdMenuImg"));
-
-		// 6. Get list of pages from index
-		List<WebElement> childs = bvdMenuImg.findElements(By.xpath(".//img"));
-		childs.remove(0);
-
-		System.out.println("Childs: " + childs.size());
-
-		ArrayList<String> images = new ArrayList<String>();
-
-		// 7. Iterate over pages saving their download URL
-		Iterator pagesIterator = childs.iterator();
-		int pageCount = 0;
-		while (pagesIterator.hasNext()) {
-
-			WebElement page = (WebElement) pagesIterator.next();
 			pageCount++;
 
-			page.click();
-
-			try {
-				dumpFirefoxSqliteCookiesFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {
-			wait = new WebDriverWait(driver, 60);
-			wait.until(ExpectedConditions.attributeContains(By.id("ctl00_cph_viewer1_imgPage"), "src", "f" + pageCount));
-			}catch (StaleElementReferenceException e) {
-				//CONTINUE
-			}
-			
-			
-			String url = (String) ((JavascriptExecutor) driver)
-					.executeScript("return $(vprex + 'imgPage').attr('src');");
-
-			String[] split = url.split("/");
-
-			String urlDownload = baseUrl + split[1] + "/" + split[2] + "/" + split[3] + "/s5/" + split[4];
-
-			System.out.println(urlDownload);
-
-			images.add(urlDownload);
-
 		}
-		
-		// 8. Iterate over pages and write to temp file
-		pagesIterator = images.iterator();
 
+		// Write urls to file
 		BufferedWriter outputWriter;
+		Iterator urlsIterator = urls.iterator();
+
 		try {
 			outputWriter = new BufferedWriter(new FileWriter(urlsFilePath));
 
-			while (pagesIterator.hasNext()) {
+			while (urlsIterator.hasNext()) {
 
-				outputWriter.write((String) pagesIterator.next());
+				String u = (String) urlsIterator.next();
+
+				System.out.println(u);
+
+				outputWriter.write(u);
 				outputWriter.newLine();
 			}
 
@@ -211,7 +151,7 @@ public class VisaoMagazineDownloader {
 
 	}
 
-	private static WebDriver setUp() {
+	private static WebDriver setUpFirefox() {
 
 		// 0. Creacion de directorio y configuracion del webdriver
 		System.out.println("0. Creating directory and configuration");
@@ -228,23 +168,25 @@ public class VisaoMagazineDownloader {
 		driver.manage().deleteAllCookies();
 
 		// Set check loop in WebDriverWaits
-		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
 
 		return driver;
 
 	}
 
-	// Dump Firefox Cookies Database to DownloadPath
-	private static void dumpFirefoxSqliteCookiesFile() throws IOException {
+	private static WebDriver setUpJBrowser() {
 
-		ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "rm " + destCookiesPath);
+		// 0. Creacion de directorio y configuracion del webdriver
+		System.out.println("0. Creating directory and configuration");
 
-		pb.start();
+		WebDriver driver = new JBrowserDriver();
 
-		ProcessBuilder pb2 = new ProcessBuilder("/bin/bash", "-c",
-				"echo \".dump\" | sqlite3 " + orgCookiesPath + " | sqlite3 " + destCookiesPath);
+		driver.manage().deleteAllCookies();
 
-		pb2.start();
+		// Set check loop in WebDriverWaits
+		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+
+		return driver;
 
 	}
 
@@ -253,7 +195,6 @@ public class VisaoMagazineDownloader {
 
 		driver.manage().deleteAllCookies();
 		driver.quit();
-		
 
 	}
 
