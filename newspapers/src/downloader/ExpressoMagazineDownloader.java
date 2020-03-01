@@ -84,7 +84,7 @@ public class ExpressoMagazineDownloader {
 
 		// 1. Configure Webriver
 
-		WebDriver driver = setUpJBrowser();
+		WebDriver driver = setUpFirefox();
 
 		File dir = new File(downloadPath);
 		if (!dir.exists()) {

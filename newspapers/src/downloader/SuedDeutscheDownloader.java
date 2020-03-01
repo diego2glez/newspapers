@@ -63,7 +63,7 @@ public class SuedDeutscheDownloader {
 
 			// Current date
 			Date date = new Date();
-			currentDay = dateFormat.format(date);
+			currentDay  = dateFormat.format(date);
 			currentYear = dateFormat2.format(date);
 			System.out.println("Current day: " + currentDay);
 			System.out.println("Current year: " + currentYear);
@@ -90,14 +90,14 @@ public class SuedDeutscheDownloader {
 
 		driver.findElement(By.linkText("Anmelden")).click();
 
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("id_login")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-form-container")));
 
-		driver.findElement(By.id("id_login")).click();
-		driver.findElement(By.id("id_login")).clear();
-		driver.findElement(By.id("id_login")).sendKeys("jramongil@hotmail.com");
+		driver.findElement(By.id("login_login-form")).click();
+		driver.findElement(By.id("login_login-form")).clear();
+		driver.findElement(By.id("login_login-form")).sendKeys("jramongil@hotmail.com");
 
-		driver.findElement(By.id("id_password")).clear();
-		driver.findElement(By.id("id_password")).sendKeys("art59ba3");
+		driver.findElement(By.id("password_login-form")).clear();
+		driver.findElement(By.id("password_login-form")).sendKeys("art59ba3");
 
 		driver.findElement(By.id("id_remember_me")).click();
 
@@ -173,10 +173,15 @@ public class SuedDeutscheDownloader {
 
 			String url = "https://epaper.sueddeutsche.de/download/" + issueId;
 
+			System.out.println("URL: " + url);
+			
 			// Write url to file
 			BufferedWriter outputWriter;
 
 			try {
+				
+				System.out.println("UrlsFilePath: " + urlsFilePath);
+				
 				outputWriter = new BufferedWriter(new FileWriter(urlsFilePath));
 
 				outputWriter.write(url);

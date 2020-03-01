@@ -26,7 +26,7 @@ public class LaPatriaDownloader {
 
 	private static final String geckoPath = "/usr/bin/geckodriver";
 	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\git\\newspapers\\newspapers\\lib\\browserDrivers\\geckodriver.exe";
-	private static final String laPatriaUrl = "http://lapatriaenlinea.com/";
+	private static final String laPatriaUrl = "https://lapatriaenlinea.com/";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
