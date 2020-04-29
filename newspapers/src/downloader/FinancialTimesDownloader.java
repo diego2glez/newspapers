@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -19,7 +18,6 @@ public class FinancialTimesDownloader {
 
 	private static final String geckoPath = "/usr/bin/geckodriver";
 	private static final String epaperUrl = "https://digital.olivesoftware.com/Olive/ODN/FTEurope/Default.aspx";
-	private static final String logoutUrl = "https://id.handelsblatt.com/logout?service=https%3A%2F%2Fepaper.handelsblatt.com%2F";
 
 	private static String downloadPath = null;
 
@@ -71,19 +69,14 @@ public class FinancialTimesDownloader {
 
 	    wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Sign in here")));
 
-	    driver.get(epaperUrl);
+	    driver.navigate().refresh();
 	    
-	    //Lo bajamos de aqui directamente en el script de bash
-	    //https://digital.olivesoftware.com/Olive/ODN/FTEurope/get/image.ashx?kind=page&href=FTE%2F2020%2F02%2F29&page=1&res=120
-
-		try {
-
-			Thread.sleep(30000);
-
-		} catch (Exception e) {
-
-		}
-
+	    //driver.get(epaperUrl);
+	    
+	    wait.until(ExpectedConditions.presenceOfElementLocated(By.className("pageview")));
+	    	    
+	    Thread.sleep(100000);
+	    
 		// 2. Get Firefox profile path
 		Process proc;
 		try {
@@ -108,25 +101,7 @@ public class FinancialTimesDownloader {
 			e1.printStackTrace();
 		}
 
-		try {
-			Thread.sleep(10000);
-
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-		// Cerramos sesion
-		//driver.get(logoutUrl);
-
-		//WebElement logout = driver.findElement(By.xpath("//a[contains(@data-command,\"loadInto\")]"));
-
-		/*if (logout != null) {
-
-			logout.click();
-
-		}*/
-
-		clearAndExit(driver);
+		//clearAndExit(driver);
 
 		System.out.println("DONE");
 

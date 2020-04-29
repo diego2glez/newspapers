@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,7 +26,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.gson.JsonObject;
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 
 public class ValorDownloader {
@@ -79,8 +79,6 @@ public class ValorDownloader {
 		// 1. Login
 		driver.get("https://www.valor.com.br/virador");
 
-		System.out.println(driver.getPageSource());
-		
 		// Wait for login textbox
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 
@@ -101,26 +99,42 @@ public class ValorDownloader {
 		driver.findElements(By.className("more")).get(0).click();
 
 		// 2. Get issue id
-		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("rdp-reader")));
-		
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.className("zoom_thumb")));
+
 		WebElement divReader = driver.findElement(By.id("rdp-reader"));
 
 		String issueId = divReader.getAttribute("data-edition-id");
 
 		System.out.println("issueId: " + issueId);
 
-		String firstPage = driver.findElement(By.xpath("//img[contains(@alt,'gina 1') and @data-ga]"))
-				.getAttribute("data-page-id").replace("'", "");
+		System.out.println(driver.getPageSource());
 
-		int pageNum = Integer.parseInt(firstPage);
+		WebElement imgFirstPage = driver.findElement(By.className("zoom_thumb"));
 
-		System.out.println("First pageId= " + firstPage);
+		String firstPageUrl = imgFirstPage.getAttribute("src");
+
+		Pattern pattern = Pattern.compile("p_(\\d*)\\/");
+		Matcher matcher = pattern.matcher(firstPageUrl);
+
+		String firstPag = "";
+
+		while (matcher.find()) {
+
+			System.out.println("group 0: " + matcher.group(0));
+
+			firstPag = matcher.group(1);
+
+		}
+
+		int pageNum = Integer.parseInt(firstPag);
+
+		System.out.println("First pageId= " + pageNum);
 
 		// Get all pages
 		URL url = null;
 
 		HttpURLConnection con = null;
-		
+
 		int status = 200;
 
 		while (status == 200) {
@@ -154,8 +168,8 @@ public class ValorDownloader {
 					obj = (JSONObject) parser.parse(inputLine);
 
 					System.out.println("URL: " + obj.get("url"));
-					
-					if(obj.get("url").equals("notfound")) {
+
+					if (obj.get("url").equals("notfound")) {
 						break;
 					}
 
@@ -178,8 +192,9 @@ public class ValorDownloader {
 
 		}
 
-		if(con != null) con.disconnect();
-		
+		if (con != null)
+			con.disconnect();
+
 		// Write urls to file
 		BufferedWriter outputWriter;
 		Iterator urlsIterator = urls.iterator();
