@@ -21,7 +21,7 @@ public class VisaoMagazineDownloader {
 
 	private static final String geckoPath = "/usr/bin/geckodriver";
 	//private static final String geckoPath = "C:\\Users\\Diego Gonzalez\\Desktop\\Workspace\\Git\\newspapers\\newspapers\\lib\\geckodriver.exe";
-	private static final String baseUrl = "http://visaodigitalsubs.visao.pt/";
+	private static final String baseUrl = "https://visaodigitalsubs.visao.pt/subscribe.aspx?pid=4797c468-57d2-4ca3-b8ce-dab4387cd3e8";
 
 	private static String downloadPath = null;
 	private static String urlsFilePath = null;
@@ -89,10 +89,10 @@ public class VisaoMagazineDownloader {
 		WebDriverWait wait = new WebDriverWait(driver, 30);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("id_login")));
 
-		driver.findElement(By.id("id_login")).clear();
-		driver.findElement(By.id("id_login")).sendKeys("ramon@tenao.com");
-		driver.findElement(By.id("id_password")).clear()	;
-		driver.findElement(By.id("id_password")).sendKeys("art58ba3");
+		driver.findElement(By.id("txtAlreadyEmail")).clear();
+		driver.findElement(By.id("txtAlreadyEmail")).sendKeys("ramon@tenao.com");
+		driver.findElement(By.id("txtAlreadyPassword")).clear()	;
+		driver.findElement(By.id("txtAlreadyPassword")).sendKeys("62r38Ih#");
 		driver.findElement(By.className("btn")).click();
 		
 		wait.until(ExpectedConditions.elementToBeClickable(By.className("howTo-continue")));
